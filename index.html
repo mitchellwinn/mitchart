@@ -43,10 +43,25 @@
             display: block;
             border: none;
         }
+        
+        .loading {
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 100;
+            transition: opacity 0.5s;
+        }
+        
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
     </style>
 </head>
 
 <body>
+    <div class="loading"></div>
+    
     <div class="background">
         <spline-viewer url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode"></spline-viewer>
     </div>
@@ -54,6 +69,22 @@
     <div class="logo">
         <spline-viewer url="https://prod.spline.design/12zIp9fiviXmrF90/scene.splinecode"></spline-viewer>
     </div>
+    
+    <script>
+        const loading = document.querySelector('.loading');
+        const viewers = document.querySelectorAll('spline-viewer');
+        let loadCount = 0;
+        
+        viewers.forEach((viewer, index) => {
+            viewer.addEventListener('load-complete', () => {
+                console.log(`Viewer ${index} load-complete`);
+                loadCount++;
+                if (loadCount >= 2) {
+                    loading.classList.add('hidden');
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
