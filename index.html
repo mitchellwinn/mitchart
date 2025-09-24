@@ -102,26 +102,36 @@
             height: var(--logo-height);
             z-index: 150;
             pointer-events: none; /* Allow clicks to pass through empty areas */
+            overflow: visible; /* Allow content to extend beyond container */
         }
         
         .logo spline-viewer {
             width: 100%;
             height: 100%;
             pointer-events: auto; /* Re-enable interaction on the actual viewer */
+            display: block;
+            /* Spline-specific fixes for content clipping */
+            transform-origin: center center;
+            object-fit: contain;
         }
 
         /* Mobile layout */
         @media (max-width: 768px) {
             :root {
                 /* Mobile values */
-                --logo-width: 80vw;  /* Increased from 60vw for more horizontal space */
-                --logo-height: 25vh;
+                --logo-width: 90vw;  /* Maximum width on mobile */
+                --logo-height: 30vh;  /* Slightly more height */
                 --logo-top: 2vh;
                 --logo-left: 50%;
             }
 
             .logo {
                 transform: translateX(-50%); /* Center horizontally */
+            }
+            
+            .logo spline-viewer {
+                /* Scale down the content to fit better on mobile */
+                transform: scale(0.85);
             }
 
             /* Add more mobile-specific styles here */
@@ -158,6 +168,11 @@
         // Create and start loading logo immediately
         const logoViewer = document.createElement('spline-viewer');
         logoViewer.url = 'https://prod.spline.design/12zIp9fiviXmrF90/scene.splinecode';
+        
+        // Set Spline viewer attributes to prevent clipping
+        logoViewer.setAttribute('loading-anim', 'false');
+        logoViewer.setAttribute('auto-rotate', 'false');
+        
         logoDiv.appendChild(logoViewer);
         
         // Track loading states
