@@ -13,7 +13,7 @@
             --logo-width: 45vw;  /* Increased from 35vw for more horizontal space */
             --logo-height: 35vh;
             --logo-top: 2vh;
-            --logo-left: 2vw;
+            --logo-right: 2vw;  /* Anchored to top-right on desktop */
 
             /* Mobile breakpoint */
             --mobile-width: 768px;
@@ -97,7 +97,8 @@
         .logo {
             position: fixed;
             top: var(--logo-top);
-            left: var(--logo-left);
+            right: var(--logo-right, auto);  /* Use right positioning on desktop */
+            left: var(--logo-left, auto);    /* Use left positioning on mobile */
             width: var(--logo-width);
             height: var(--logo-height);
             z-index: 150;
@@ -122,7 +123,8 @@
                 --logo-width: 90vw;  /* Maximum width on mobile */
                 --logo-height: 30vh;  /* Slightly more height */
                 --logo-top: 2vh;
-                --logo-left: 50%;
+                --logo-left: 50%;    /* Center horizontally with transform */
+                --logo-right: auto;  /* Disable right positioning on mobile */
             }
 
             .logo {
@@ -130,8 +132,8 @@
             }
             
             .logo spline-viewer {
-                /* Scale down the content to fit better on mobile */
-                transform: scale(0.85);
+                /* Scale down and shift slightly right to prevent left clipping */
+                transform: scale(0.8) translateX(5%);
             }
 
             /* Add more mobile-specific styles here */
