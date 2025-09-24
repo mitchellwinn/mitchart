@@ -29,7 +29,7 @@
         html, body {
             height: 100%;
             overflow: hidden;
-            background: #fff;
+            background: #000; /* Black fallback while loading */
         }
 
         /* Viewer styles */
@@ -101,14 +101,12 @@
             width: var(--logo-width);
             height: var(--logo-height);
             z-index: 150;
-            overflow: visible;
             pointer-events: none; /* Allow clicks to pass through empty areas */
         }
         
         .logo spline-viewer {
             width: 100%;
             height: 100%;
-            overflow: visible;
             pointer-events: auto; /* Re-enable interaction on the actual viewer */
         }
 
@@ -165,6 +163,7 @@
         // Track loading states
         let backgroundLoaded = false;
         let logoLoaded = false;
+        let loadingTimeout = null;
         
         // Function to check if we should hide the overlay
         const checkLoadingComplete = () => {
@@ -173,12 +172,26 @@
                 console.log('Background loaded, fading out overlay...');
                 loading.classList.add('hidden');
                 
+                // Clear the timeout since loading succeeded
+                if (loadingTimeout) {
+                    clearTimeout(loadingTimeout);
+                }
+                
                 // Remove overlay from DOM after fade completes
                 setTimeout(() => {
                     loading.remove();
                 }, 800);
             }
         };
+        
+        // Fallback: Hide loading screen after 15 seconds even if not loaded
+        loadingTimeout = setTimeout(() => {
+            console.warn('Loading timeout - removing overlay anyway');
+            loading.classList.add('hidden');
+            setTimeout(() => {
+                loading.remove();
+            }, 800);
+        }, 15000);
         
         // Listen for background load
         background.addEventListener('load-complete', () => {
@@ -191,6 +204,20 @@
         logoViewer.addEventListener('load-complete', () => {
             console.log('Logo Spline viewer loaded');
             logoLoaded = true;
+        });
+        
+        // Error handling
+        background.addEventListener('error', (e) => {
+            console.error('Background Spline failed to load:', e);
+            // Still hide loading screen on error
+            loading.classList.add('hidden');
+            setTimeout(() => {
+                loading.remove();
+            }, 800);
+        });
+        
+        logoViewer.addEventListener('error', (e) => {
+            console.error('Logo Spline failed to load:', e);
         });
     </script>
 </body>
