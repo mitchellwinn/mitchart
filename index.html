@@ -29,7 +29,7 @@
         html, body {
             height: 100%;
             overflow: hidden;
-            background: #000;
+            background: #fff;
         }
 
         /* Viewer styles */
@@ -44,14 +44,45 @@
         .loading {
             position: fixed;
             inset: 0;
-            background: #000;
+            background: #fff;
             z-index: 100;
-            transition: opacity 0.5s;
+            transition: opacity 0.8s ease-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .loading.hidden {
             opacity: 0;
             pointer-events: none;
+        }
+
+        /* Loading text animation */
+        .loading-text {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            font-size: 24px;
+            font-weight: 300;
+            letter-spacing: 2px;
+            color: #000;
+        }
+
+        .loading-text .dots {
+            display: inline-block;
+            width: 30px;
+            text-align: left;
+        }
+
+        @keyframes ellipsis {
+            0% { content: ''; }
+            25% { content: '.'; }
+            50% { content: '..'; }
+            75% { content: '...'; }
+            100% { content: ''; }
+        }
+
+        .loading-text .dots::after {
+            content: '';
+            animation: ellipsis 2s infinite;
         }
 
         /* Desktop layout (default) */
@@ -98,22 +129,13 @@
             }
             /* Add tablet-specific styles here */
         }
-            transition: opacity 0.5s;
-        }
-
-        .loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .logo {
-            z-index: 150;
-        }
     </style>
 </head>
 
 <body>
-    <div class="loading"></div>
+    <div class="loading">
+        <div class="loading-text">LOADING<span class="dots"></span></div>
+    </div>
 
     <div class="background">
         <spline-viewer url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode"></spline-viewer>
@@ -126,21 +148,40 @@
         const background = document.querySelector('.background spline-viewer');
         const logoDiv = document.getElementById('logo');
 
-        // Wait for background to load first
-        background.addEventListener('load-complete', () => {
-            console.log('Background loaded, starting logo...');
-            
-            // Create logo viewer
-            const logoViewer = document.createElement('spline-viewer');
-            logoViewer.url = 'https://prod.spline.design/12zIp9fiviXmrF90/scene.splinecode';
-            
-            // Logo loads on top of black, then both logo and fade happen together
-            logoViewer.addEventListener('load-complete', () => {
-                console.log('Logo loaded, fading out black...');
+        // Create and start loading logo immediately
+        const logoViewer = document.createElement('spline-viewer');
+        logoViewer.url = 'https://prod.spline.design/12zIp9fiviXmrF90/scene.splinecode';
+        logoDiv.appendChild(logoViewer);
+        
+        // Track loading states
+        let backgroundLoaded = false;
+        let logoLoaded = false;
+        
+        // Function to check if we should hide the overlay
+        const checkLoadingComplete = () => {
+            // Only hide overlay when main background viewer is loaded
+            if (backgroundLoaded) {
+                console.log('Background loaded, fading out overlay...');
                 loading.classList.add('hidden');
-            });
-            
-            logoDiv.appendChild(logoViewer);
+                
+                // Remove overlay from DOM after fade completes
+                setTimeout(() => {
+                    loading.remove();
+                }, 800);
+            }
+        };
+        
+        // Listen for background load
+        background.addEventListener('load-complete', () => {
+            console.log('Background Spline viewer loaded');
+            backgroundLoaded = true;
+            checkLoadingComplete();
+        });
+        
+        // Listen for logo load (optional - just for logging)
+        logoViewer.addEventListener('load-complete', () => {
+            console.log('Logo Spline viewer loaded');
+            logoLoaded = true;
         });
     </script>
 </body>
