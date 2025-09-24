@@ -101,6 +101,15 @@
             width: var(--logo-width);
             height: var(--logo-height);
             z-index: 150;
+            overflow: visible;
+            pointer-events: none; /* Allow clicks to pass through empty areas */
+        }
+        
+        .logo spline-viewer {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+            pointer-events: auto; /* Re-enable interaction on the actual viewer */
         }
 
         /* Mobile layout */
