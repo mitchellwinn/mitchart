@@ -153,7 +153,7 @@
     </div>
 
     <div class="background">
-        <spline-viewer url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode"></spline-viewer>
+        <spline-viewer url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode" logo="false"></spline-viewer>
     </div>
 
     <div class="logo" id="logo"></div>
@@ -169,6 +169,7 @@
         
         // Set Spline viewer attributes
         logoViewer.setAttribute('loading-anim', 'false');
+        logoViewer.setAttribute('logo', 'false');  // Hide "Built with Spline" watermark
         // Keep mouse tracking enabled by NOT disabling interactions
         
         logoDiv.appendChild(logoViewer);
