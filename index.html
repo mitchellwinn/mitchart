@@ -13,7 +13,7 @@
             --logo-width: 45vw;  /* Increased from 35vw for more horizontal space */
             --logo-height: 35vh;
             --logo-top: 2vh;
-            --logo-right: 2vw;  /* Anchored to top-right on desktop */
+            --logo-left: 2vw;  /* Anchored to top-left on desktop */
 
             /* Mobile breakpoint */
             --mobile-width: 768px;
@@ -97,19 +97,16 @@
         .logo {
             position: fixed;
             top: var(--logo-top);
-            right: var(--logo-right, auto);  /* Use right positioning on desktop */
-            left: var(--logo-left, auto);    /* Use left positioning on mobile */
+            left: var(--logo-left);  /* Use left positioning */
             width: var(--logo-width);
             height: var(--logo-height);
             z-index: 150;
-            pointer-events: none; /* Allow clicks to pass through empty areas */
             overflow: visible; /* Allow content to extend beyond container */
         }
         
         .logo spline-viewer {
             width: 100%;
             height: 100%;
-            pointer-events: auto; /* Re-enable interaction on the actual viewer */
             display: block;
             /* Spline-specific fixes for content clipping */
             transform-origin: center center;
@@ -124,7 +121,6 @@
                 --logo-height: 30vh;  /* Slightly more height */
                 --logo-top: 2vh;
                 --logo-left: 50%;    /* Center horizontally with transform */
-                --logo-right: auto;  /* Disable right positioning on mobile */
             }
 
             .logo {
@@ -171,9 +167,9 @@
         const logoViewer = document.createElement('spline-viewer');
         logoViewer.url = 'https://prod.spline.design/12zIp9fiviXmrF90/scene.splinecode';
         
-        // Set Spline viewer attributes to prevent clipping
+        // Set Spline viewer attributes
         logoViewer.setAttribute('loading-anim', 'false');
-        logoViewer.setAttribute('auto-rotate', 'false');
+        // Keep mouse tracking enabled by NOT disabling interactions
         
         logoDiv.appendChild(logoViewer);
         
