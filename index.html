@@ -6,7 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MitchArt</title>
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.57/build/spline-viewer.js"></script>
+    
+    <!-- Try to load HS Yamazaki font (may need to be downloaded locally) -->
+    <!-- <link href="path/to/HS-Yamazaki.css" rel="stylesheet"> -->
+    <!-- Fallback fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@800,900&display=swap" rel="stylesheet">
+    
+    <!-- Custom animations and utilities -->
+    <link rel="stylesheet" href="styles/animations.css">
     <style>
+        /* Font face declaration for Jalnan2 */
+        @font-face {
+            font-family: 'Jalnan2';
+            src: url('fonts/Jalnan2/Jalnan2.otf') format('opentype'),
+                 url('fonts/Jalnan2/Jalnan2TTF.ttf') format('truetype');
+            font-weight: normal;
+            font-display: swap;
+        }
+        
         /* CSS Variables for easy tweaking */
         :root {
             /* Desktop values */
@@ -28,8 +45,8 @@
 
         html, body {
             height: 100%;
-            overflow: hidden;
             background: #fff; /* White background */
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         /* Viewer styles */
@@ -38,6 +55,33 @@
             height: 100%;
             display: block;
             border: none;
+        }
+        
+        /* Background Spline should allow scroll events to pass through */
+        .background spline-viewer {
+            pointer-events: none;
+        }
+        
+        /* Re-enable pointer events on background hover for interactions */
+        .background spline-viewer:hover {
+            pointer-events: auto;
+        }
+        
+        /* Gradient overlay to smooth transition from Spline scene to white */
+        .gradient-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 30vh; /* Adjust height as needed */
+            background: linear-gradient(to bottom, 
+                rgba(255, 255, 255, 0) 0%,     /* Fully transparent at top */
+                rgba(255, 255, 255, 0.3) 40%,  /* Slight white */
+                rgba(255, 255, 255, 0.7) 70%,  /* More white */
+                rgba(255, 255, 255, 1) 100%    /* Fully white at bottom */
+            );
+            pointer-events: none; /* Don't block interactions */
+            z-index: 2;
         }
 
         /* Loading overlay */
@@ -87,15 +131,96 @@
 
         /* Desktop layout (default) */
         .background {
-            position: fixed;
-            inset: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
             z-index: 1;
         }
 
+        /* Parallax container */
+        .content {
+            height: 100vh;
+            overflow-y: auto;
+            perspective: 1px;
+            transform-style: preserve-3d;
+        }
+        
+        /* Fast scrolling layer (logo) - normal speed */
+        .fast-scroll-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200vh; /* Tall enough to scroll */
+            transform: translateZ(0);
+            z-index: 3;
+        }
+        
+        /* Slow scrolling layer (background + text) - ~80% speed */
+        .slow-scroll-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            transform: translateZ(-0.3px) scale(1.3);
+            z-index: 1;
+        }
+        
+        /* Gallery text positioned lower in gradient */
+        .gallery-text {
+            position: absolute;
+            top: 800px; /* Position from top */
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            z-index: 3;
+        }
+        
+        /* Coming Soon text positioned separately */
+        .coming-soon-text {
+            position: absolute;
+            top: 1300px; /* Even lower - 500px below main text */
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #333;
+            z-index: 3;
+        }
+        
+        /* Scroll-triggered animation */
+        .text-scroll-animate {
+            opacity: 0;
+            transform: translateY(50px);
+            animation: scrollFadeIn linear forwards; /* forwards keeps final state */
+            animation-timeline: scroll();
+            animation-range: 30vh 80vh; /* Longer fade distance */
+        }
+        
+        @keyframes scrollFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo container - stays at top initially but scrolls with content */
+        .logo-container {
+            position: relative;
+            height: 50vh; /* Give some initial height */
+            z-index: 150;
+        }
+
         .logo {
-            position: fixed;
+            position: absolute;
             top: var(--logo-top);
             left: var(--logo-left);  /* Use left positioning */
             width: var(--logo-width);
@@ -152,11 +277,41 @@
         <div class="loading-text">LOADING<span class="dots"></span></div>
     </div>
 
-    <div class="background">
-        <spline-viewer url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode" logo="false"></spline-viewer>
+    <!-- Scrollable content container -->
+    <div class="content">
+        <!-- Slow scrolling layer (background + text) -->
+        <div class="slow-scroll-layer">
+            <div class="background">
+                <spline-viewer 
+                    url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode" 
+                    logo="false"
+                    loading-anim="false"
+                    mouse-controls="true"
+                    touch-action="auto"
+                    events-target="global">
+                </spline-viewer>
+                <div class="gradient-overlay"></div>
+            </div>
+            
+            <!-- Text positioned in gradient area -->
+            <div class="gallery-text">
+                <h2 class="text-animate" style="font-size: 2rem; font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">Scroll to View Gallery</h2>
+                <p class="text-animate" style="margin-top: 1rem; font-size: 1.1rem; font-family: 'OkDanDan-Bold', sans-serif;">2D · 3D · Games</p>
+            </div>
+            
+            <!-- Coming Soon text positioned separately -->
+            <div class="coming-soon-text">
+                <h1 class="text-scroll-animate" style="font-size: 5rem; font-weight: 900; letter-spacing: 3px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">COMING SOON</h1>
+            </div>
+        </div>
+        
+        <!-- Fast scrolling layer (logo) -->
+        <div class="fast-scroll-layer">
+            <div class="logo-container">
+                <div class="logo" id="logo"></div>
+            </div>
+        </div>
     </div>
-
-    <div class="logo" id="logo"></div>
 
     <script>
         const loading = document.querySelector('.loading');
@@ -212,7 +367,18 @@
             console.log('Background Spline viewer loaded');
             backgroundLoaded = true;
             checkLoadingComplete();
+            
+            // Start text animation 3 seconds after Spline loads
+            setTimeout(() => {
+                animateText();
+            }, 3000);
         });
+        
+        // Fallback: Show text after 8 seconds regardless
+        setTimeout(() => {
+            const textElements = document.querySelectorAll('.text-animate');
+            textElements.forEach(el => el.style.opacity = '1');
+        }, 8000);
         
         // Listen for logo load (optional - just for logging)
         logoViewer.addEventListener('load-complete', () => {
@@ -233,6 +399,43 @@
         logoViewer.addEventListener('error', (e) => {
             console.error('Logo Spline failed to load:', e);
         });
+        
+        // Text animation function
+        function animateText() {
+            const textElements = document.querySelectorAll('.text-animate');
+            
+            textElements.forEach((element, elementIndex) => {
+                const text = element.textContent;
+                element.innerHTML = ''; // Clear existing content
+                element.style.opacity = '1'; // Show the text container
+                
+                // Split text into letters and wrap each in a span
+                text.split('').forEach((char, index) => {
+                    const span = document.createElement('span');
+                    span.classList.add('letter');
+                    
+                    if (char === ' ') {
+                        span.classList.add('space');
+                        span.innerHTML = '&nbsp;';
+                    } else {
+                        span.textContent = char;
+                    }
+                    
+                    element.appendChild(span);
+                });
+                
+                // Animate letters one by one over 1 second
+                const letters = element.querySelectorAll('.letter');
+                const delay = 1000 / letters.length; // Distribute over 1 second
+                const elementDelay = elementIndex * 1000; // 1 second between elements
+                
+                letters.forEach((letter, index) => {
+                    setTimeout(() => {
+                        letter.classList.add('animate');
+                    }, elementDelay + (index * delay));
+                });
+            });
+        }
     </script>
 </body>
 
