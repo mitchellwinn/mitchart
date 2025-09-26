@@ -160,11 +160,21 @@
             .background spline-viewer {
                 transform: scale(0.95);
             }
+            
+            /* Center all layers on tablet */
+            .medium-scroll-layer .background {
+                left: -25vw; /* Keep wide background centered */
+            }
         }
         
         @media (max-width: 480px) {
             .background spline-viewer {
                 transform: scale(0.9);
+            }
+            
+            /* Center all layers on mobile */
+            .medium-scroll-layer .background {
+                left: -25vw; /* Keep wide background centered */
             }
         }
         
@@ -185,30 +195,42 @@
         .content {
             height: 100vh;
             overflow-y: auto;
+            overflow-x: hidden; /* Prevent horizontal scroll */
             perspective: 1px;
             transform-style: preserve-3d;
         }
         
-        /* Fast scrolling layer (logo) - normal speed */
-        .fast-scroll-layer {
+        /* Fastest layer (logo) - normal speed */
+        .fastest-scroll-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 200vh; /* Tall enough to scroll */
             transform: translateZ(0);
-            z-index: 3;
+            z-index: 4;
         }
         
-        /* Slow scrolling layer (background + text) - ~80% speed */
-        .slow-scroll-layer {
+        /* Medium speed layer (background + gradient) - ~85% speed */
+        .medium-scroll-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100vh;
-            transform: translateZ(-0.3px) scale(clamp(1.1, 0.5 + 100vw / 1200px, 1.3));
+            transform: translateZ(-0.1px) scale(1.05);
             z-index: 1;
+        }
+        
+        /* Slowest layer (text) - ~75% speed */
+        .slowest-scroll-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh; /* Same height as other layers */
+            transform: translateZ(-0.2px) scale(1.1);
+            z-index: 3;
         }
         
         /* Gallery text positioned in gradient area */
@@ -327,8 +349,8 @@
 
     <!-- Scrollable content container -->
     <div class="content">
-        <!-- Slow scrolling layer (background + text) -->
-        <div class="slow-scroll-layer">
+        <!-- Medium speed layer (background + gradient) -->
+        <div class="medium-scroll-layer">
             <div class="background">
                 <spline-viewer 
                     url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode" 
@@ -340,8 +362,10 @@
                 </spline-viewer>
                 <div class="gradient-overlay"></div>
             </div>
-            
-            <!-- Text positioned in gradient area -->
+        </div>
+        
+        <!-- Slowest layer (text) -->
+        <div class="slowest-scroll-layer">
             <div class="gallery-text">
                 <h2 class="text-animate responsive-heading" style="font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">Scroll to View Gallery</h2>
                 <p class="text-animate responsive-subtext" style="margin-top: 1rem; font-family: 'OkDanDan-Bold', sans-serif;">2D · 3D · Games</p>
@@ -353,8 +377,8 @@
             </div>
         </div>
         
-        <!-- Fast scrolling layer (logo) -->
-        <div class="fast-scroll-layer">
+        <!-- Fastest layer (logo) -->
+        <div class="fastest-scroll-layer">
             <div class="logo-container">
                 <div class="logo" id="logo"></div>
             </div>
