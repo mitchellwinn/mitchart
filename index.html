@@ -24,6 +24,15 @@
             font-display: swap;
         }
         
+        /* Font face declaration for OkDanDan-Bold */
+        @font-face {
+            font-family: 'OkDanDan-Bold';
+            src: url('fonts/OkDanDan-Bold.otf') format('opentype'),
+                 url('fonts/OkDanDan-Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-display: swap;
+        }
+        
         /* CSS Variables for easy tweaking */
         :root {
             /* Desktop values */
@@ -198,7 +207,7 @@
             transform: translateY(50px);
             animation: scrollFadeIn linear forwards; /* forwards keeps final state */
             animation-timeline: scroll();
-            animation-range: 30vh 80vh; /* Longer fade distance */
+            animation-range: 20vh 90vh; /* Much longer fade distance */
         }
         
         @keyframes scrollFadeIn {
