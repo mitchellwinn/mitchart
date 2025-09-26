@@ -1,0 +1,226 @@
+/* =============================================================================
+   3D CHARACTER DISPLAY STYLES
+   ============================================================================= */
+
+/* Character Section Container */
+/* ========================== */
+
+/* Gallery Container - holds all character sections */
+.gallery-container {
+    position: absolute;
+    top: 110vh; /* Lower on desktop */
+    left: 0;
+    width: 100%;
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem; /* Space between character sections */
+    padding: 2rem 0;
+    background: transparent; /* Transparent background */
+}
+
+/* Individual Character Section */
+.character-section {
+    position: relative; /* Stack within gallery container */
+    width: 100%;
+    height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Character Container */
+.character-container {
+    position: relative;
+    width: 100%;
+    max-width: 1400px;
+    height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Align to start for absolute positioning */
+    padding: 0 2rem;
+}
+
+/* 3D Character Viewer */
+.character-3d {
+    position: absolute;
+    left: 25vw; /* Position at 25% from left */
+    width: 40vw; /* Make it bigger - 40% of viewport width */
+    height: 100%;
+    min-height: 500px;
+    /* Hidden by default; visibility driven by .io-* utilities */
+    opacity: 0;
+    /* Transform handled by io-fade-left class */
+    touch-action: pan-y; /* allow vertical scroll while interacting */
+}
+
+.character-3d spline-viewer {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+    transform: scale(2.2); /* Make character even larger */
+    pointer-events: auto; /* Ensure Spline is interactable */
+    position: relative;
+    z-index: 2;
+    touch-action: pan-y; /* allow vertical scroll gestures */
+}
+
+/* Character Info Container */
+.character-info {
+    position: absolute;
+    left: 60vw; /* Position at 60% from left */
+    width: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+    transform: translateX(-50%); /* Center the text on this position */
+}
+
+/* Shared text scaling class */
+.character-text-scale {
+    font-size: clamp(4.5rem, 10vw, 8rem); /* Much bigger text */
+}
+
+/* Character Name Styling */
+.character-name {
+    font-family: 'Jalnan2', 'Arial Black', sans-serif;
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #000;
+    margin: 0;
+    text-align: center; /* Center align text */
+    /* Remove these - let io-fade-right-close handle it */
+    /* opacity and transform handled by io class */
+    text-shadow: 2px 2px 8px rgba(255,255,255,0.9);
+    pointer-events: auto; /* Ensure text is selectable */
+    user-select: text; /* Allow text selection */
+}
+
+/* Old scroll-timeline animations removed - using IO classes instead */
+
+
+/* Responsive Design */
+/* ================ */
+
+/* Tablet Layout */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .character-container {
+        gap: 2rem;
+        padding: 0 1rem;
+    }
+    
+    .character-info {
+        padding-left: 1rem;
+    }
+    
+    .character-name {
+        font-size: clamp(2.5rem, 5vw, 4rem);
+    }
+}
+
+/* Mobile Layout */
+@media (max-width: 768px) {
+    .gallery-container {
+        top: 95vh; /* Higher on mobile */
+    }
+    
+    .character-section {
+        height: 100vh; /* Full viewport height */
+        background: rgba(255, 255, 255, 1); /* Solid background on mobile */
+    }
+    
+    .character-container {
+        flex-direction: column;
+        gap: 0.5rem; /* Much closer together */
+        padding: 1rem;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+    }
+    
+    /* Put character first in visual order */
+    .character-3d {
+        width: 100%;
+        height: 60vh; /* Smaller to fit title below */
+        min-height: 350px;
+        /* Use same fade-left as desktop */
+        transform: translateX(-80px);
+        order: 1; /* Show first */
+        opacity: 0; /* Start invisible, will fade in */
+    }
+    
+    .character-info {
+        width: 100%;
+        height: auto;
+        padding-left: 0;
+        text-align: center;
+        align-items: center;
+        order: 2; /* Show second (below the character) */
+        z-index: 10;
+        opacity: 1; /* Keep visible container */
+    }
+    
+    .character-3d spline-viewer {
+        width: 100%;
+        height: 100%;
+        transform: scale(1.5); /* Make character 50% larger within container */
+    }
+    
+    .character-name {
+        font-size: clamp(3rem, 12vw, 5rem); /* Much larger on mobile */
+        /* Remove transform and opacity - io-fade-right-close handles it */
+        margin-top: 0;
+        margin-bottom: 0;
+        color: #000;
+        font-weight: 900;
+        text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+    }
+    
+    /* Mobile animations removed - using IO classes instead */
+}
+
+/* Small Mobile Layout */
+@media (max-width: 480px) {
+    .character-section {
+        height: 100vh;
+    }
+    
+    .character-container {
+        height: 85vh;
+        gap: 0.5rem; /* Closer together */
+        padding: 1rem;
+    }
+    
+    .character-3d {
+        height: 55vh; /* Slightly smaller to fit title below */
+        min-height: 320px;
+    }
+    
+    .character-3d spline-viewer {
+        transform: scale(1.7); /* Even more scaling for small screens */
+    }
+    
+    .character-name {
+        font-size: clamp(2rem, 9vw, 3rem); /* Larger text on small screens */
+        margin-bottom: 0;
+        margin-top: 0;
+    }
+}
+
+
+/* Character Loading States */
+/* ======================= */
+
+.character-loading {
+    opacity: 0.5;
+}
+
+.character-loaded {
+    opacity: 1;
+}
+

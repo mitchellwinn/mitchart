@@ -14,6 +14,7 @@
     
     <!-- Custom animations and utilities -->
     <link rel="stylesheet" href="styles/animations.css">
+    <link rel="stylesheet" href="styles/characters.css">
     <style>
         /* Font face declaration for Jalnan2 */
         @font-face {
@@ -206,9 +207,14 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 200vh; /* Tall enough to scroll */
+            height: 300vh; /* All layers same height for overlap */
             transform: translateZ(0);
             z-index: 4;
+            pointer-events: none; /* Don't block interactions below */
+        }
+        .fastest-scroll-layer .logo,
+        .fastest-scroll-layer .logo * {
+            pointer-events: auto; /* Re-enable only for logo content */
         }
         
         /* Medium speed layer (background + gradient) - ~85% speed */
@@ -217,7 +223,7 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100vh;
+            height: 300vh; /* All layers same height for overlap */
             transform: translateZ(-0.1px) scale(1.05);
             z-index: 1;
         }
@@ -228,27 +234,27 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100vh; /* Same height as other layers */
+            height: 300vh; /* All layers same height for overlap */
             transform: translateZ(-0.2px) scale(1.1);
             z-index: 3;
         }
         
-        /* Gallery text positioned in gradient area */
+        /* Gallery text positioned lower */
         .gallery-text {
             position: absolute;
-            bottom: 0; /* Position from bottom like gradient */
+            top: 75vh; /* Lower, still overlapping main scene */
             left: 0;
             width: 100%;
-            height: clamp(200px, 30vh, 400px); /* Match gradient height */
+            height: clamp(200px, 30vh, 400px);
             text-align: center;
             color: #333;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             z-index: 3;
-            /* Remove overflow hidden to prevent mobile flickering */
             display: flex;
             flex-direction: column;
-            justify-content: center; /* Center text vertically within gradient */
+            justify-content: center;
             padding: 2rem;
+            pointer-events: auto; /* Allow text interaction */
         }
         
         /* Coming Soon text positioned separately */
@@ -366,14 +372,31 @@
         
         <!-- Slowest layer (text) -->
         <div class="slowest-scroll-layer">
-            <div class="gallery-text">
-                <h2 class="text-animate responsive-heading" style="font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">Scroll to View Gallery</h2>
-                <p class="text-animate responsive-subtext" style="margin-top: 1rem; font-family: 'OkDanDan-Bold', sans-serif;">2D · 3D · Games</p>
+            <!-- Gallery Container - holds all character sections -->
+            <div class="gallery-container">
+                <!-- First Character Section -->
+                <div class="character-section">
+                    <div class="character-container">
+<div class="character-3d io-fade-left">
+                            <spline-viewer 
+                                url="https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode" 
+                                logo="false"
+                                loading-anim="false"
+                                mouse-controls="true"
+                                touch-action="auto"
+                                events-target="global">
+                            </spline-viewer>
+                        </div>
+                        <div class="character-info">
+<h1 class="character-name character-text-scale io-fade-right-close">Retropian</h1>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <!-- Coming Soon text positioned separately -->
-            <div class="coming-soon-text">
-                <h1 class="text-scroll-animate responsive-large" style="font-weight: 900; letter-spacing: 2px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">COMING SOON</h1>
+            <div class="gallery-text io-fade-reverse">
+                <h2 class="text-animate responsive-heading" style="font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">Scroll to View Gallery</h2>
+                <p class="text-animate responsive-subtext" style="margin-top: 1rem; font-family: 'OkDanDan-Bold', sans-serif;">2D · 3D · Games</p>
             </div>
         </div>
         
@@ -451,6 +474,17 @@
             const textElements = document.querySelectorAll('.text-animate');
             textElements.forEach(el => el.style.opacity = '1');
         }, 6000);
+
+        // Enable scrolling with mouse wheel when hovering Spline (avoid scroll blocking)
+        const contentEl = document.querySelector('.content');
+        document.querySelectorAll('.character-3d spline-viewer').forEach((viewer) => {
+            viewer.addEventListener('wheel', (e) => {
+                if (!e.ctrlKey && contentEl) {
+                    contentEl.scrollBy({ top: e.deltaY, behavior: 'auto' });
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        });
         
         // Listen for logo load (optional - just for logging)
         logoViewer.addEventListener('load-complete', () => {
@@ -508,6 +542,45 @@
                 });
             });
         }
+
+        // IntersectionObserver-based on-view animations (desktop + mobile)
+        (function initOnViewAnimations() {
+            const rootEl = document.querySelector('.content') || null;
+            const observer = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            }, {
+                root: rootEl,
+                rootMargin: '0px 0px -55% 0px', // finish before center of viewport
+                threshold: 0.01
+            });
+
+            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-scale').forEach(el => observer.observe(el));
+        })();
+        // IntersectionObserver-based on-view animations (desktop + mobile)
+        (function initOnViewAnimations() {
+            const rootEl = document.querySelector('.content') || null;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        // Animate out when scrolling away
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            }, {
+                root: rootEl,
+                rootMargin: '0px 0px -50% 0px', // trigger earlier
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-fade-right-close, .io-scale, .io-fade-reverse').forEach(el => observer.observe(el));
+        })();
     </script>
 </body>
 
