@@ -27,8 +27,8 @@
         /* Font face declaration for OkDanDan-Bold */
         @font-face {
             font-family: 'OkDanDan-Bold';
-            src: url('fonts/OkDanDan-Bold.otf') format('opentype'),
-                 url('fonts/OkDanDan-Bold.ttf') format('truetype');
+            src: url('./fonts/OkDanDan-Bold.otf') format('opentype'),
+                 url('./fonts/OkDanDan-Bold.ttf') format('truetype');
             font-weight: bold;
             font-display: swap;
         }
@@ -82,7 +82,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 30vh; /* Adjust height as needed */
+            height: clamp(200px, 30vh, 400px); /* Responsive height with limits */
             background: linear-gradient(to bottom, 
                 rgba(255, 255, 255, 0) 0%,     /* Fully transparent at top */
                 rgba(255, 255, 255, 0.3) 40%,  /* Slight white */
@@ -178,22 +178,28 @@
             z-index: 1;
         }
         
-        /* Gallery text positioned lower in gradient */
+        /* Gallery text positioned in gradient area */
         .gallery-text {
             position: absolute;
-            top: 800px; /* Position from top */
+            bottom: 0; /* Position from bottom like gradient */
             left: 0;
             width: 100%;
+            height: clamp(200px, 30vh, 400px); /* Match gradient height */
             text-align: center;
             color: #333;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             z-index: 3;
+            overflow: hidden; /* Cut off text that goes too high */
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* Center text vertically within gradient */
+            padding: 2rem;
         }
         
         /* Coming Soon text positioned separately */
         .coming-soon-text {
             position: absolute;
-            top: 1300px; /* Even lower - 500px below main text */
+            top: 120vh; /* Much lower using viewport height */
             left: 0;
             width: 100%;
             text-align: center;
@@ -377,17 +383,17 @@
             backgroundLoaded = true;
             checkLoadingComplete();
             
-            // Start text animation 3 seconds after Spline loads
+            // Start text animation 2 seconds after Spline loads
             setTimeout(() => {
                 animateText();
-            }, 3000);
+            }, 2000);
         });
         
-        // Fallback: Show text after 8 seconds regardless
+        // Fallback: Show text after 6 seconds regardless
         setTimeout(() => {
             const textElements = document.querySelectorAll('.text-animate');
             textElements.forEach(el => el.style.opacity = '1');
-        }, 8000);
+        }, 6000);
         
         // Listen for logo load (optional - just for logging)
         logoViewer.addEventListener('load-complete', () => {
