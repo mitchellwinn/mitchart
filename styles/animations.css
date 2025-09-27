@@ -200,7 +200,7 @@
 
 /* Horizontal fade directions */
 .io-fade-left {
-    transform: translateX(-130px); /* Come from left */
+    transform: translateX(calc(-60% - 80px)); /* -60% plus animation offset */
     transition: opacity 500ms ease-out, transform 500ms ease-out;
 }
 
@@ -241,10 +241,14 @@
 }
 
 /* Special case for centered elements */
-.character-info.is-visible {
-    transform: translateX(-50%) !important; /* Keep text centered */
+.character-name.is-visible {
+    transform: translateX(-50%) !important; /* Keep title centered */
+}
+
+.character-subtitle.is-visible {
+    transform: translateX(-50%) !important; /* Keep subtitle centered */
 }
 
 .character-3d.is-visible {
-    transform: translateX(-50%) !important; /* Keep character centered */
+    transform: translateX(-60%) !important; /* Shift character left by 60% */
 }

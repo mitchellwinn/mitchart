@@ -37,10 +37,10 @@
         /* CSS Variables for easy tweaking */
         :root {
             /* Desktop values */
-            --logo-width: 45vw;  /* Responsive width */
+            --logo-width: 100vw;  /* Full width to center logo */
             --logo-height: 35vh;
             --logo-top: 0.5vh;  /* Based on vertical height */
-            --logo-left: -8vw;  /* Much closer to left edge */
+            --logo-left: 0;  /* Align to left edge for full width */
 
             /* Mobile breakpoint */
             --mobile-width: 768px;
@@ -142,7 +142,7 @@
         /* Desktop layout (default) */
         .background {
             position: absolute;
-            top: 0;
+            top: 5vh; /* Slightly lower main scene */
             left: -25vw; /* Always center with overflow */
             width: 150vw; /* Always 50% wider than viewport */
             height: 100vh;
@@ -242,7 +242,7 @@
         /* Gallery text positioned lower */
         .gallery-text {
             position: absolute;
-            top: 75vh; /* Lower, still overlapping main scene */
+            top: 80vh; /* Moved down slightly more */
             left: 0;
             width: 100%;
             height: clamp(200px, 30vh, 400px);
@@ -253,6 +253,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            align-items: center; /* Ensure horizontal centering */
             padding: 2rem;
             pointer-events: auto; /* Allow text interaction */
         }
@@ -318,14 +319,14 @@
         @media (max-width: 768px) {
             :root {
                 /* Mobile values */
-                --logo-width: 90vw;  /* Maximum width on mobile */
+                --logo-width: 100vw;  /* Full viewport width on mobile */
                 --logo-height: 30vh;  /* Slightly more height */
                 --logo-top: 2vh;
-                --logo-left: 50%;    /* Center horizontally with transform */
+                --logo-left: 0;    /* Align to left edge */
             }
 
             .logo {
-                transform: translateX(-50%); /* Center horizontally */
+                /* No transform needed for full width mobile logo */
             }
             
             .logo spline-viewer {
@@ -340,7 +341,7 @@
         @media (min-width: 769px) and (max-width: 1024px) {
             :root {
                 /* Tablet values if needed */
-                --logo-width: 55vw;  /* Increased from 45vw for more horizontal space */
+                --logo-width: 100vw;  /* Full width on tablet too */
                 --logo-height: 30vh;
             }
             /* Add tablet-specific styles here */
@@ -388,7 +389,8 @@
                             </spline-viewer>
                         </div>
                         <div class="character-info">
-<h1 class="character-name character-text-scale io-fade-right-close">Retropian</h1>
+                            <h1 class="character-name character-text-scale io-fade-left">Retropian</h1>
+                            <p class="character-subtitle io-fade-right-close">Mitchell Winn · 2025</p>
                         </div>
                     </div>
                 </div>
