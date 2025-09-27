@@ -428,10 +428,7 @@
                 <div class="character-section">
                     <div class="character-container">
                         <div class="character-3d io-fade-left">
-                            <spline-viewer url="https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode"
-                                logo="false" loading-anim="false" mouse-controls="true" touch-action="auto"
-                                events-target="global">
-                            </spline-viewer>
+                            <canvas id="character-canvas"></canvas>
                         </div>
                         <div class="character-info">
                             <h1 class="character-name character-text-scale io-fade-right-tiny">Retropian</h1>
@@ -534,7 +531,7 @@
 
         // Enable scrolling with mouse wheel when hovering Spline (avoid scroll blocking)
         const contentEl = document.querySelector('.content');
-        document.querySelectorAll('.character-3d spline-viewer').forEach((viewer) => {
+        document.querySelectorAll('.character-3d spline-viewer, .character-3d canvas#character-canvas').forEach((viewer) => {
             viewer.addEventListener('wheel', (e) => {
                 if (!e.ctrlKey && contentEl) {
                     contentEl.scrollBy({ top: e.deltaY, behavior: 'auto' });
@@ -639,65 +636,38 @@
             document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-fade-right-close, .io-fade-right-tiny, .io-scale, .io-fade-reverse').forEach(el => observer.observe(el));
         })();
 
-        // Animation button functionality (robust: installs handlers immediately, defers emit until viewer ready)
+        // Button active styling (Runtime wiring in module script)
         document.addEventListener('DOMContentLoaded', function () {
             const animationButtons = document.querySelectorAll('.animation-btn');
-            const characterViewer = document.querySelector('.character-3d spline-viewer');
-            let viewerReady = false;
-
-            if (!characterViewer) {
-                console.error('Spline character viewer not found.');
-                return;
-            }
-
-            // Track readiness
-            const markReady = () => {
-                viewerReady = true;
-                console.log('Character viewer ready.');
-            };
-            characterViewer.addEventListener('load-complete', markReady, { once: true });
-
-            // Safety: if it was already loaded before this handler attached
-            if (characterViewer.hasAttribute('data-loaded')) {
-                viewerReady = true;
-            }
-
-            // Unified emit helper that tries hover first, then mouseDown
-            function emitTo(name) {
-                if (!viewerReady) {
-                    console.warn('Viewer not ready yet; deferring emit until load-complete:', name);
-                    characterViewer.addEventListener('load-complete', () => emitTo(name), { once: true });
-                    return;
-                }
-                try {
-                    characterViewer.emitEvent('mouseHover', name);
-                    console.log(`Emitted mouseHover on: ${name}`);
-                } catch (e) {
-                    console.warn('mouseHover emit failed; trying mouseDown. Error:', e);
-                    try {
-                        characterViewer.emitEvent('mouseDown', name);
-                        console.log(`Emitted mouseDown on: ${name}`);
-                    } catch (e2) {
-                        console.error('Emit failed. Verify the object exists and listens to events in Spline.', e2);
-                    }
-                }
-            }
-
-            // Install button handlers immediately
             animationButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    const target = this.getAttribute('data-animation');
-                    console.log('Button clicked:', target, 'emitEvent available:', typeof characterViewer.emitEvent);
-
-                    // Toggle active state
                     animationButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
-
-                    emitTo(target);
                 });
             });
         });
-    </script>
+</script>
+
+<!-- Character viewer Runtime loader and button wiring -->
+<script type="module">
+  import { Application } from 'https://unpkg.com/@splinetool/runtime@latest/build/runtime.js';
+  const canvas = document.getElementById('character-canvas');
+  if (canvas) {
+    const app = new Application(canvas);
+    try {
+      await app.load('https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode');
+      // Optional: tweak zoom if you want to compensate CSS scaling differences
+      // app.setZoom(1);
+      const wire = (name) => {
+        const btn = document.querySelector(`.animation-btn[data-animation="${name}"]`);
+        if (btn) btn.addEventListener('click', () => app.emitEvent('mouseHover', name));
+      };
+      wire('idle'); wire('walk'); wire('run');
+    } catch (e) {
+      console.error('Failed to load Spline Runtime scene:', e);
+    }
+  }
+</script>
 </body>
 
 </html>

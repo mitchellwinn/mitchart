@@ -67,6 +67,20 @@
     touch-action: pan-y; /* allow vertical scroll gestures */
 }
 
+/* Runtime canvas styling for character viewer */
+.character-3d canvas#character-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    border: none;
+    transform: scale(2.2);
+    transform-origin: center center;
+    pointer-events: auto;
+    position: relative;
+    z-index: 2;
+    touch-action: pan-y;
+}
+
 /* Character Info Container */
 .character-info {
     position: absolute;
