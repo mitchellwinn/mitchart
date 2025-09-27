@@ -187,6 +187,8 @@
 .io-fade-left,
 .io-fade-right,
 .io-fade-right-close,
+.io-fade-right-tiny,
+.io-fade-left-tiny,
 .io-scale {
     opacity: 0;
     will-change: opacity, transform;
@@ -215,11 +217,25 @@
     transition: opacity 500ms ease-out, transform 500ms ease-out;
 }
 
-/* Fade from right but closer to center */
+/* Fade from right with small offset (layout determines final position) */
 .io-fade-right-close {
     opacity: 0; /* MUST start invisible */
-    transform: translateX(calc(-50% + 100px)); /* Come from right, end centered */
+    transform: translateX(30px); /* Small offset from the right */
     transition: opacity 500ms ease-out, transform 500ms ease-out;
+}
+
+/* Title-specific tiny right fade */
+.io-fade-right-tiny {
+    opacity: 0;
+    transform: translateX(10px);
+    transition: opacity 400ms ease-out, transform 400ms ease-out;
+}
+
+/* Title-specific tiny left fade (left -> right) */
+.io-fade-left-tiny {
+    opacity: 0;
+    transform: translateX(-20px); /* a little further than 10px */
+    transition: opacity 450ms ease-out, transform 450ms ease-out;
 }
 
 /* Reverse fade - starts visible (after initial animation), fades out when scrolled */
@@ -240,14 +256,7 @@
     transform: none !important;
 }
 
-/* Special case for centered elements */
-.character-name.is-visible {
-    transform: translateX(-50%) !important; /* Keep title centered */
-}
-
-.character-subtitle.is-visible {
-    transform: translateX(-50%) !important; /* Keep subtitle centered */
-}
+/* Special-case centering removed to allow layout-driven alignment (right-aligned at 10vw) */
 
 .character-3d.is-visible {
     transform: translateX(-60%) !important; /* Shift character left by 60% */

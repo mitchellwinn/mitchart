@@ -70,16 +70,17 @@
 /* Character Info Container */
 .character-info {
     position: absolute;
-    left: 50%; /* Start from center */
-    top: 50%;
-    width: auto;
+    left: 0;
+    right: 0;
+    top: 30%; /* Higher up for earlier animation */
+    width: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-start;
+    align-items: stretch; /* Let children handle their own alignment */
     z-index: 10;
-    transform: translate(10vw, -50%); /* Move right from center, center vertically */
+    transform: translateY(-50%); /* Only center vertically */
 }
 
 /* Shared text scaling class */
@@ -94,12 +95,26 @@
     letter-spacing: 2px;
     color: #000;
     margin: 0;
-    text-align: center; /* Center align text */
-    /* Remove these - let io-fade-right-close handle it */
+    text-align: right; /* Right align text */
+    padding-right: 10vw; /* Explicit right positioning */
     /* opacity and transform handled by io class */
     text-shadow: 2px 2px 8px rgba(255,255,255,0.9);
     pointer-events: auto; /* Ensure text is selectable */
     user-select: text; /* Allow text selection */
+}
+
+/* Sub Elements Container (subtitle + buttons) */
+.sub_elements {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end; /* Right align all children */
+    width: 100%;
+    margin-top: 1rem;
+    padding-right: 10vw; /* Explicit right positioning */
+    /* Animation handled by io-fade-right-close class */
+    opacity: 0;
+    transform: translateX(30px);
+    transition: all 0.5s ease;
 }
 
 /* Character Subtitle Styling (creator and year) */
@@ -110,12 +125,66 @@
     letter-spacing: 1px;
     color: #666; /* Slightly lighter color */
     margin: 0.5rem 0 0 0; /* Small top margin */
-    text-align: center;
+    text-align: right; /* Right align to match title */
     text-shadow: 1px 1px 4px rgba(255,255,255,0.8);
     pointer-events: auto;
     user-select: text;
-    /* Ensure it uses io-fade-right-close animation */
-    opacity: 0;
+    /* No individual animation - handled by parent sub_elements */
+}
+
+/* Character Buttons Container */
+.character-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, max-content); /* 3 columns per row */
+    justify-content: end; /* Align grid to the right */
+    justify-items: end;   /* Align items to the right within cells */
+    align-items: center;
+    column-gap: 1rem;
+    row-gap: 0.75rem;
+    margin-top: 1.5rem;
+    width: 100%;
+    /* No horizontal scrolling; we wrap to new rows every 3 */
+    /* No individual padding - parent character-info handles positioning */
+}
+
+/* Individual Animation Buttons */
+.animation-btn {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 0.85rem 2rem; /* slightly taller, wider padding */
+    font-family: 'OkDanDan-Bold', 'Arial', sans-serif;
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    border-radius: 25px; /* Much more rounded */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+    text-transform: uppercase;
+    min-width: 160px; /* roughly twice as wide as before */
+}
+
+.animation-btn:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.animation-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.animation-btn:focus {
+    outline: 2px solid #666;
+    outline-offset: 2px;
+}
+
+.animation-btn.active {
+    background: #444;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
 }
 
 /* Old scroll-timeline animations removed - using IO classes instead */
@@ -131,9 +200,7 @@
         padding: 0 1rem;
     }
     
-    .character-info {
-        padding-left: 1rem;
-    }
+    /* Remove character-info padding override - let main layout handle positioning */
     
     .character-name {
         font-size: clamp(2.5rem, 5vw, 4rem);
@@ -199,12 +266,35 @@
         color: #000;
         font-weight: 900;
         text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+        text-align: center; /* Center on mobile */
+        padding-right: 0; /* Remove right padding on mobile */
+    }
+    
+    .sub_elements {
+        margin-top: 0.5rem; /* Reduce margin on mobile */
     }
     
     .character-subtitle {
         font-size: clamp(1rem, 4vw, 1.5rem); /* Responsive mobile size */
         margin-top: 0.5rem;
         color: #666;
+    }
+    
+    .character-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, max-content); /* 2 per row on mobile */
+        justify-content: center; /* Center grid on mobile */
+        justify-items: center;   /* Center items in cells */
+        padding-right: 0; /* Remove right padding on mobile */
+        margin-top: 1rem; /* Reduce top margin on mobile */
+        column-gap: 0.75rem; /* Slightly smaller gap on mobile */
+        row-gap: 0.5rem;
+    }
+    
+    .animation-btn {
+        padding: 0.6rem 1.2rem; /* Smaller padding on mobile */
+        font-size: clamp(0.8rem, 3vw, 1rem); /* Responsive mobile button text */
+        min-width: 70px; /* Smaller minimum width on mobile */
     }
     
     /* Mobile animations removed - using IO classes instead */

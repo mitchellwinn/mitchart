@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MitchArt</title>
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.10.57/build/spline-viewer.js"></script>
-    
+
     <!-- Try to load HS Yamazaki font (may need to be downloaded locally) -->
     <!-- <link href="path/to/HS-Yamazaki.css" rel="stylesheet"> -->
     <!-- Fallback fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@800,900&display=swap" rel="stylesheet">
-    
+
     <!-- Custom animations and utilities -->
     <link rel="stylesheet" href="styles/animations.css">
     <link rel="stylesheet" href="styles/characters.css">
@@ -20,27 +20,30 @@
         @font-face {
             font-family: 'Jalnan2';
             src: url('fonts/Jalnan2/Jalnan2.otf') format('opentype'),
-                 url('fonts/Jalnan2/Jalnan2TTF.ttf') format('truetype');
+                url('fonts/Jalnan2/Jalnan2TTF.ttf') format('truetype');
             font-weight: normal;
             font-display: swap;
         }
-        
+
         /* Font face declaration for OkDanDan-Bold */
         @font-face {
             font-family: 'OkDanDan-Bold';
             src: url('./fonts/OkDanDan-Bold.otf') format('opentype'),
-                 url('./fonts/OkDanDan-Bold.ttf') format('truetype');
+                url('./fonts/OkDanDan-Bold.ttf') format('truetype');
             font-weight: bold;
             font-display: swap;
         }
-        
+
         /* CSS Variables for easy tweaking */
         :root {
             /* Desktop values */
-            --logo-width: 100vw;  /* Full width to center logo */
+            --logo-width: 100vw;
+            /* Full width to center logo */
             --logo-height: 35vh;
-            --logo-top: 0.5vh;  /* Based on vertical height */
-            --logo-left: 0;  /* Align to left edge for full width */
+            --logo-top: 0.5vh;
+            /* Based on vertical height */
+            --logo-left: 0;
+            /* Align to left edge for full width */
 
             /* Mobile breakpoint */
             --mobile-width: 768px;
@@ -53,10 +56,13 @@
             box-sizing: border-box;
         }
 
-        html, body {
+        html,
+        body {
             height: 100%;
-            background: #fff; /* White background */
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            background: #fff;
+            /* White background */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
         }
 
         /* Viewer styles */
@@ -66,31 +72,37 @@
             display: block;
             border: none;
         }
-        
+
         /* Background Spline should allow scroll events to pass through */
         .background spline-viewer {
             pointer-events: none;
         }
-        
+
         /* Re-enable pointer events on background hover for interactions */
         .background spline-viewer:hover {
             pointer-events: auto;
         }
-        
+
         /* Gradient overlay to smooth transition from Spline scene to white */
         .gradient-overlay {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: clamp(200px, 30vh, 400px); /* Responsive height with limits */
-            background: linear-gradient(to bottom, 
-                rgba(255, 255, 255, 0) 0%,     /* Fully transparent at top */
-                rgba(255, 255, 255, 0.3) 40%,  /* Slight white */
-                rgba(255, 255, 255, 0.7) 70%,  /* More white */
-                rgba(255, 255, 255, 1) 100%    /* Fully white at bottom */
-            );
-            pointer-events: none; /* Don't block interactions */
+            height: clamp(200px, 30vh, 400px);
+            /* Responsive height with limits */
+            background: linear-gradient(to bottom,
+                    rgba(255, 255, 255, 0) 0%,
+                    /* Fully transparent at top */
+                    rgba(255, 255, 255, 0.3) 40%,
+                    /* Slight white */
+                    rgba(255, 255, 255, 0.7) 70%,
+                    /* More white */
+                    rgba(255, 255, 255, 1) 100%
+                    /* Fully white at bottom */
+                );
+            pointer-events: none;
+            /* Don't block interactions */
             z-index: 2;
         }
 
@@ -127,11 +139,25 @@
         }
 
         @keyframes ellipsis {
-            0% { content: ''; }
-            25% { content: '.'; }
-            50% { content: '..'; }
-            75% { content: '...'; }
-            100% { content: ''; }
+            0% {
+                content: '';
+            }
+
+            25% {
+                content: '.';
+            }
+
+            50% {
+                content: '..';
+            }
+
+            75% {
+                content: '...';
+            }
+
+            100% {
+                content: '';
+            }
         }
 
         .loading-text .dots::after {
@@ -142,52 +168,58 @@
         /* Desktop layout (default) */
         .background {
             position: absolute;
-            top: 5vh; /* Slightly lower main scene */
-            left: -25vw; /* Always center with overflow */
-            width: 150vw; /* Always 50% wider than viewport */
+            top: 5vh;
+            /* Slightly lower main scene */
+            left: -25vw;
+            /* Always center with overflow */
+            width: 150vw;
+            /* Always 50% wider than viewport */
             height: 100vh;
             z-index: 1;
         }
-        
+
         /* Scale Spline viewer based on screen width */
         .background spline-viewer {
             width: 100%;
             height: 100%;
             transform-origin: center center;
-            object-fit: contain; /* Maintain aspect ratio */
+            object-fit: contain;
+            /* Maintain aspect ratio */
         }
-        
+
         @media (max-width: 768px) {
             .background spline-viewer {
                 transform: scale(0.95);
             }
-            
+
             /* Center all layers on tablet */
             .medium-scroll-layer .background {
-                left: -25vw; /* Keep wide background centered */
+                left: -25vw;
+                /* Keep wide background centered */
             }
         }
-        
+
         @media (max-width: 480px) {
             .background spline-viewer {
                 transform: scale(0.9);
             }
-            
+
             /* Center all layers on mobile */
             .medium-scroll-layer .background {
-                left: -25vw; /* Keep wide background centered */
+                left: -25vw;
+                /* Keep wide background centered */
             }
         }
-        
+
         /* Responsive text scaling classes */
         .responsive-heading {
             font-size: clamp(1.5rem, 4vw, 2rem);
         }
-        
+
         .responsive-subtext {
             font-size: clamp(1rem, 2.5vw, 1.1rem);
         }
-        
+
         .responsive-large {
             font-size: clamp(3.5rem, 8vw, 5rem);
         }
@@ -196,53 +228,61 @@
         .content {
             height: 100vh;
             overflow-y: auto;
-            overflow-x: hidden; /* Prevent horizontal scroll */
+            overflow-x: hidden;
+            /* Prevent horizontal scroll */
             perspective: 1px;
             transform-style: preserve-3d;
         }
-        
+
         /* Fastest layer (logo) - normal speed */
         .fastest-scroll-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 300vh; /* All layers same height for overlap */
+            height: 300vh;
+            /* All layers same height for overlap */
             transform: translateZ(0);
             z-index: 4;
-            pointer-events: none; /* Don't block interactions below */
+            pointer-events: none;
+            /* Don't block interactions below */
         }
+
         .fastest-scroll-layer .logo,
         .fastest-scroll-layer .logo * {
-            pointer-events: auto; /* Re-enable only for logo content */
+            pointer-events: auto;
+            /* Re-enable only for logo content */
         }
-        
+
         /* Medium speed layer (background + gradient) - ~85% speed */
         .medium-scroll-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 300vh; /* All layers same height for overlap */
+            height: 300vh;
+            /* All layers same height for overlap */
             transform: translateZ(-0.1px) scale(1.05);
             z-index: 1;
         }
-        
+
         /* Slowest layer (text) - ~75% speed */
         .slowest-scroll-layer {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 300vh; /* All layers same height for overlap */
+            height: 300vh;
+            /* All layers same height for overlap */
             transform: translateZ(-0.2px) scale(1.1);
             z-index: 3;
         }
-        
+
         /* Gallery text positioned lower */
         .gallery-text {
             position: absolute;
-            top: 80vh; /* Moved down slightly more */
+            top: 80vh;
+            /* Moved down slightly more */
             left: 0;
             width: 100%;
             height: clamp(200px, 30vh, 400px);
@@ -253,36 +293,42 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            align-items: center; /* Ensure horizontal centering */
+            align-items: center;
+            /* Ensure horizontal centering */
             padding: 2rem;
-            pointer-events: auto; /* Allow text interaction */
+            pointer-events: auto;
+            /* Allow text interaction */
         }
-        
+
         /* Coming Soon text positioned separately */
         .coming-soon-text {
             position: absolute;
-            top: 120vh; /* Much lower using viewport height */
+            top: 120vh;
+            /* Much lower using viewport height */
             left: 0;
             width: 100%;
             text-align: center;
             color: #333;
             z-index: 3;
         }
-        
+
         /* Scroll-triggered animation */
         .text-scroll-animate {
             opacity: 0;
             transform: translateY(50px);
-            animation: scrollFadeIn linear forwards; /* forwards keeps final state */
+            animation: scrollFadeIn linear forwards;
+            /* forwards keeps final state */
             animation-timeline: scroll();
-            animation-range: 20vh 90vh; /* Much longer fade distance */
+            animation-range: 20vh 90vh;
+            /* Much longer fade distance */
         }
-        
+
         @keyframes scrollFadeIn {
             from {
                 opacity: 0;
                 transform: translateY(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -292,20 +338,23 @@
         /* Logo container - stays at top initially but scrolls with content */
         .logo-container {
             position: relative;
-            height: 50vh; /* Give some initial height */
+            height: 50vh;
+            /* Give some initial height */
             z-index: 150;
         }
 
         .logo {
             position: absolute;
             top: var(--logo-top);
-            left: var(--logo-left);  /* Use left positioning */
+            left: var(--logo-left);
+            /* Use left positioning */
             width: var(--logo-width);
             height: var(--logo-height);
             z-index: 150;
-            overflow: visible; /* Allow content to extend beyond container */
+            overflow: visible;
+            /* Allow content to extend beyond container */
         }
-        
+
         .logo spline-viewer {
             width: 100%;
             height: 100%;
@@ -319,16 +368,19 @@
         @media (max-width: 768px) {
             :root {
                 /* Mobile values */
-                --logo-width: 100vw;  /* Full viewport width on mobile */
-                --logo-height: 30vh;  /* Slightly more height */
+                --logo-width: 100vw;
+                /* Full viewport width on mobile */
+                --logo-height: 30vh;
+                /* Slightly more height */
                 --logo-top: 2vh;
-                --logo-left: 0;    /* Align to left edge */
+                --logo-left: 0;
+                /* Align to left edge */
             }
 
             .logo {
                 /* No transform needed for full width mobile logo */
             }
-            
+
             .logo spline-viewer {
                 /* Scale down to fit better on mobile */
                 transform: scale(0.8);
@@ -341,9 +393,11 @@
         @media (min-width: 769px) and (max-width: 1024px) {
             :root {
                 /* Tablet values if needed */
-                --logo-width: 100vw;  /* Full width on tablet too */
+                --logo-width: 100vw;
+                /* Full width on tablet too */
                 --logo-height: 30vh;
             }
+
             /* Add tablet-specific styles here */
         }
     </style>
@@ -359,18 +413,13 @@
         <!-- Medium speed layer (background + gradient) -->
         <div class="medium-scroll-layer">
             <div class="background">
-                <spline-viewer 
-                    url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode" 
-                    logo="false"
-                    loading-anim="false"
-                    mouse-controls="true"
-                    touch-action="auto"
-                    events-target="global">
+                <spline-viewer url="https://prod.spline.design/7YycjGwsA6rW40mS/scene.splinecode" logo="false"
+                    loading-anim="false" mouse-controls="true" touch-action="auto" events-target="global">
                 </spline-viewer>
                 <div class="gradient-overlay"></div>
             </div>
         </div>
-        
+
         <!-- Slowest layer (text) -->
         <div class="slowest-scroll-layer">
             <!-- Gallery Container - holds all character sections -->
@@ -378,30 +427,36 @@
                 <!-- First Character Section -->
                 <div class="character-section">
                     <div class="character-container">
-<div class="character-3d io-fade-left">
-                            <spline-viewer 
-                                url="https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode" 
-                                logo="false"
-                                loading-anim="false"
-                                mouse-controls="true"
-                                touch-action="auto"
+                        <div class="character-3d io-fade-left">
+                            <spline-viewer url="https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode"
+                                logo="false" loading-anim="false" mouse-controls="true" touch-action="auto"
                                 events-target="global">
                             </spline-viewer>
                         </div>
                         <div class="character-info">
-                            <h1 class="character-name character-text-scale io-fade-left">Retropian</h1>
-                            <p class="character-subtitle io-fade-right-close">Mitchell Winn · 2025</p>
+                            <h1 class="character-name character-text-scale io-fade-right-tiny">Retropian</h1>
+                            <div class="sub_elements io-fade-right-close">
+                                <p class="character-subtitle">Mitchell Winn · Retry World · 2025</p>
+                                <div class="character-buttons">
+                                    <button class="animation-btn" data-animation="idle">Idle</button>
+                                    <button class="animation-btn" data-animation="walk">Walk</button>
+                                    <button class="animation-btn" data-animation="run">Run</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
             <div class="gallery-text io-fade-reverse">
-                <h2 class="text-animate responsive-heading" style="font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">Scroll to View Gallery</h2>
-                <p class="text-animate responsive-subtext" style="margin-top: 1rem; font-family: 'OkDanDan-Bold', sans-serif;">2D · 3D · Games</p>
+                <h2 class="text-animate responsive-heading"
+                    style="font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">
+                    Scroll to View Gallery</h2>
+                <p class="text-animate responsive-subtext"
+                    style="margin-top: 1rem; font-family: 'OkDanDan-Bold', sans-serif;">2D · 3D · Games</p>
             </div>
         </div>
-        
+
         <!-- Fastest layer (logo) -->
         <div class="fastest-scroll-layer">
             <div class="logo-container">
@@ -418,38 +473,38 @@
         // Create and start loading logo immediately
         const logoViewer = document.createElement('spline-viewer');
         logoViewer.url = 'https://prod.spline.design/12zIp9fiviXmrF90/scene.splinecode';
-        
+
         // Set Spline viewer attributes
         logoViewer.setAttribute('loading-anim', 'false');
         logoViewer.setAttribute('logo', 'false');  // Hide "Built with Spline" watermark
         // Keep mouse tracking enabled by NOT disabling interactions
-        
+
         logoDiv.appendChild(logoViewer);
-        
+
         // Track loading states
         let backgroundLoaded = false;
         let logoLoaded = false;
         let loadingTimeout = null;
-        
+
         // Function to check if we should hide the overlay
         const checkLoadingComplete = () => {
             // Only hide overlay when main background viewer is loaded
             if (backgroundLoaded) {
                 console.log('Background loaded, fading out overlay...');
                 loading.classList.add('hidden');
-                
+
                 // Clear the timeout since loading succeeded
                 if (loadingTimeout) {
                     clearTimeout(loadingTimeout);
                 }
-                
+
                 // Remove overlay from DOM after fade completes
                 setTimeout(() => {
                     loading.remove();
                 }, 800);
             }
         };
-        
+
         // Fallback: Hide loading screen after 15 seconds even if not loaded
         loadingTimeout = setTimeout(() => {
             console.warn('Loading timeout - removing overlay anyway');
@@ -458,19 +513,19 @@
                 loading.remove();
             }, 800);
         }, 15000);
-        
+
         // Listen for background load
         background.addEventListener('load-complete', () => {
             console.log('Background Spline viewer loaded');
             backgroundLoaded = true;
             checkLoadingComplete();
-            
+
             // Start text animation 2 seconds after Spline loads
             setTimeout(() => {
                 animateText();
             }, 2000);
         });
-        
+
         // Fallback: Show text after 6 seconds regardless
         setTimeout(() => {
             const textElements = document.querySelectorAll('.text-animate');
@@ -487,13 +542,13 @@
                 }
             }, { passive: false });
         });
-        
+
         // Listen for logo load (optional - just for logging)
         logoViewer.addEventListener('load-complete', () => {
             console.log('Logo Spline viewer loaded');
             logoLoaded = true;
         });
-        
+
         // Error handling
         background.addEventListener('error', (e) => {
             console.error('Background Spline failed to load:', e);
@@ -503,40 +558,40 @@
                 loading.remove();
             }, 800);
         });
-        
+
         logoViewer.addEventListener('error', (e) => {
             console.error('Logo Spline failed to load:', e);
         });
-        
+
         // Text animation function
         function animateText() {
             const textElements = document.querySelectorAll('.text-animate');
-            
+
             textElements.forEach((element, elementIndex) => {
                 const text = element.textContent;
                 element.innerHTML = ''; // Clear existing content
                 element.style.opacity = '1'; // Show the text container
-                
+
                 // Split text into letters and wrap each in a span
                 text.split('').forEach((char, index) => {
                     const span = document.createElement('span');
                     span.classList.add('letter');
-                    
+
                     if (char === ' ') {
                         span.classList.add('space');
                         span.innerHTML = '&nbsp;';
                     } else {
                         span.textContent = char;
                     }
-                    
+
                     element.appendChild(span);
                 });
-                
+
                 // Animate letters one by one over 1 second
                 const letters = element.querySelectorAll('.letter');
                 const delay = 1000 / letters.length; // Distribute over 1 second
                 const elementDelay = elementIndex * 1000; // 1 second between elements
-                
+
                 letters.forEach((letter, index) => {
                     setTimeout(() => {
                         letter.classList.add('animate');
@@ -561,7 +616,7 @@
                 threshold: 0.01
             });
 
-            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-scale').forEach(el => observer.observe(el));
+            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-scale, .io-fade-right-close, .io-fade-right-tiny').forEach(el => observer.observe(el));
         })();
         // IntersectionObserver-based on-view animations (desktop + mobile)
         (function initOnViewAnimations() {
@@ -581,8 +636,67 @@
                 threshold: 0.1
             });
 
-            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-fade-right-close, .io-scale, .io-fade-reverse').forEach(el => observer.observe(el));
+            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-fade-right-close, .io-fade-right-tiny, .io-scale, .io-fade-reverse').forEach(el => observer.observe(el));
         })();
+
+        // Animation button functionality (robust: installs handlers immediately, defers emit until viewer ready)
+        document.addEventListener('DOMContentLoaded', function () {
+            const animationButtons = document.querySelectorAll('.animation-btn');
+            const characterViewer = document.querySelector('.character-3d spline-viewer');
+            let viewerReady = false;
+
+            if (!characterViewer) {
+                console.error('Spline character viewer not found.');
+                return;
+            }
+
+            // Track readiness
+            const markReady = () => {
+                viewerReady = true;
+                console.log('Character viewer ready.');
+            };
+            characterViewer.addEventListener('load-complete', markReady, { once: true });
+
+            // Safety: if it was already loaded before this handler attached
+            if (characterViewer.hasAttribute('data-loaded')) {
+                viewerReady = true;
+            }
+
+            // Unified emit helper that tries hover first, then mouseDown
+            function emitTo(name) {
+                if (!viewerReady) {
+                    console.warn('Viewer not ready yet; deferring emit until load-complete:', name);
+                    characterViewer.addEventListener('load-complete', () => emitTo(name), { once: true });
+                    return;
+                }
+                try {
+                    characterViewer.emitEvent('mouseHover', name);
+                    console.log(`Emitted mouseHover on: ${name}`);
+                } catch (e) {
+                    console.warn('mouseHover emit failed; trying mouseDown. Error:', e);
+                    try {
+                        characterViewer.emitEvent('mouseDown', name);
+                        console.log(`Emitted mouseDown on: ${name}`);
+                    } catch (e2) {
+                        console.error('Emit failed. Verify the object exists and listens to events in Spline.', e2);
+                    }
+                }
+            }
+
+            // Install button handlers immediately
+            animationButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const target = this.getAttribute('data-animation');
+                    console.log('Button clicked:', target, 'emitEvent available:', typeof characterViewer.emitEvent);
+
+                    // Toggle active state
+                    animationButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+
+                    emitTo(target);
+                });
+            });
+        });
     </script>
 </body>
 
