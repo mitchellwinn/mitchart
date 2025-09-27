@@ -203,6 +203,11 @@
                 top: 60vh; /* Start higher on mobile */
                 height: 40vh; /* Taller gradient on mobile */
             }
+            
+            /* Position gallery text relative to mobile scene bottom */
+            .gallery-text {
+                top: 65vh; /* Higher on mobile to match scene proportions */
+            }
         }
 
         @media (max-width: 480px) {
@@ -288,12 +293,12 @@
         /* Gallery text - simple and centered */
         .gallery-text {
             position: absolute;
-            top: 95vh;  /* Moved lower for better positioning on mobile and desktop */
+            top: 75vh;  /* Positioned relative to main scene bottom (scene ends ~70vh) */
             left: 0;
             right: 0;
             text-align: center;
             color: #333;
-            z-index: 3;
+            z-index: 4; /* Above gradient to ensure visibility */
             opacity: 0;
             transform: translateY(30px);
             transition: opacity 0.6s ease-out, transform 0.6s ease-out;
