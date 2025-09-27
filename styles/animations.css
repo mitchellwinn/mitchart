@@ -13,13 +13,14 @@
 /* Hide letters initially */
 .text-animate .letter {
     opacity: 0;
-    display: inline-block;
+    display: inline;  /* Changed from inline-block to prevent extra spacing */
     animation-fill-mode: forwards;
 }
 
 /* Preserve spaces */
 .text-animate .letter.space {
-    width: 0.25em;
+    display: inline;
+    width: 0.3em;
 }
 
 /* Letter fade-in animation */

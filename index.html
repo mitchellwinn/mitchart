@@ -275,29 +275,32 @@
             height: 300vh;
             /* All layers same height for overlap */
             transform: translateZ(-0.2px) scale(1.1);
+            transform-origin: center center;  /* Scale from center to maintain alignment */
             z-index: 3;
         }
 
-        /* Gallery text positioned lower */
+        /* Gallery text - simple and centered */
         .gallery-text {
             position: absolute;
-            top: 80vh;
-            /* Moved down slightly more */
+            top: 85vh;  /* Lowered from 80vh */
             left: 0;
-            width: 100%;
-            height: clamp(200px, 30vh, 400px);
+            right: 0;
             text-align: center;
             color: #333;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             z-index: 3;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            /* Ensure horizontal centering */
-            padding: 2rem;
-            pointer-events: auto;
-            /* Allow text interaction */
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+
+        .gallery-text.scroll-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .gallery-text.scroll-hidden {
+            opacity: 0;
+            transform: translateY(-30px);
         }
 
         /* Coming Soon text positioned separately */
@@ -445,7 +448,7 @@
                 </div>
             </div>
 
-            <div class="gallery-text io-fade-reverse">
+            <div class="gallery-text" id="gallery-text">
                 <h2 class="text-animate responsive-heading"
                     style="font-weight: 900; letter-spacing: 1px; font-family: 'Jalnan2', 'Arial Black', sans-serif;">
                     Scroll to View Gallery</h2>
@@ -516,11 +519,6 @@
             console.log('Background Spline viewer loaded');
             backgroundLoaded = true;
             checkLoadingComplete();
-
-            // Start text animation 2 seconds after Spline loads
-            setTimeout(() => {
-                animateText();
-            }, 2000);
         });
 
         // Fallback: Show text after 6 seconds regardless
@@ -596,6 +594,46 @@
                 });
             });
         }
+        
+        // Gallery text animation function
+        function animateGalleryText() {
+            const galleryTextElements = document.querySelectorAll('#gallery-text .text-animate');
+            
+            galleryTextElements.forEach((element, elementIndex) => {
+                // Skip if already animated
+                if (element.querySelector('.letter')) return;
+                
+                const text = element.textContent.trim();  // TRIM the text!
+                element.innerHTML = ''; // Clear existing content
+                element.style.opacity = '1'; // Show the text container
+
+                // Split text into letters and wrap each in a span
+                text.split('').forEach((char, index) => {
+                    const span = document.createElement('span');
+                    span.classList.add('letter');
+
+                    if (char === ' ') {
+                        span.classList.add('space');
+                        span.innerHTML = '&nbsp;';
+                    } else {
+                        span.textContent = char;
+                    }
+
+                    element.appendChild(span);
+                });
+
+                // Animate letters one by one over 1 second
+                const letters = element.querySelectorAll('.letter');
+                const delay = 1000 / letters.length; // Distribute over 1 second
+                const elementDelay = elementIndex * 1000; // 1 second between elements
+
+                letters.forEach((letter, index) => {
+                    setTimeout(() => {
+                        letter.classList.add('animate');
+                    }, elementDelay + (index * delay));
+                });
+            });
+        }
 
         // IntersectionObserver-based on-view animations (desktop + mobile)
         (function initOnViewAnimations() {
@@ -633,7 +671,45 @@
                 threshold: 0.1
             });
 
-            document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-fade-right-close, .io-fade-right-tiny, .io-scale, .io-fade-reverse').forEach(el => observer.observe(el));
+        document.querySelectorAll('.io-fade, .io-fade-left, .io-fade-right, .io-fade-right-close, .io-fade-right-tiny, .io-scale').forEach(el => observer.observe(el));
+        })();
+
+        // Custom scroll animation for gallery text
+        (function initGalleryTextScroll() {
+            const galleryText = document.getElementById('gallery-text');
+            const contentEl = document.querySelector('.content');
+            
+            if (!galleryText || !contentEl) return;
+            
+            function updateGalleryText() {
+                const scrollTop = contentEl.scrollTop;
+                const windowHeight = window.innerHeight;
+                
+                // Text is visible initially, then hides when scrolling down
+                const hideThreshold = windowHeight * 0.3;  // Start hiding at 30vh of scroll
+                
+                if (scrollTop < hideThreshold) {
+                    // At top of page - show text
+                    if (!galleryText.classList.contains('scroll-visible')) {
+                        galleryText.classList.remove('scroll-hidden');
+                        galleryText.classList.add('scroll-visible');
+                        // Don't trigger animation here - only on initial load
+                    }
+                } else {
+                    // Scrolled down - hide text with upward animation
+                    galleryText.classList.remove('scroll-visible');
+                    galleryText.classList.add('scroll-hidden');
+                }
+            }
+            
+            contentEl.addEventListener('scroll', updateGalleryText, { passive: true });
+            
+            // Initial check and animation
+            updateGalleryText();
+            // Trigger initial animation after a short delay
+            setTimeout(() => {
+                animateGalleryText();
+            }, 500);
         })();
 
         // Button active styling (Runtime wiring in module script)
@@ -657,27 +733,60 @@
     const SCENE_URL = 'https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode';
     const BUTTON_TARGETS = ['idle', 'walk', 'run'];
 
-    // Simplest hard reset: reload, then emit the clicked animation. No queue, no reverse.
-    async function resetAndPlay(name) {
+    // Function to trigger mouseDown event on named objects
+    async function playAnimation(name) {
+      console.log(`Button clicked: ${name}`);
       const buttons = document.querySelectorAll('.animation-btn');
       buttons.forEach(b => b.disabled = true);
       try {
-        await app.load(SCENE_URL);
-        app.emitEvent('mouseHover', name);
+        // Find the object with the name matching the button (idle, walk, run)
+        console.log('Looking for object:', name);
+        const targetObject = app.findObjectByName(name);
+        
+        if (targetObject) {
+          console.log('Found object:', targetObject);
+          // Trigger mouseDown event on the object
+          targetObject.emitEvent('mouseDown');
+          console.log(`✓ Triggered mouseDown on object: ${name}`);
+        } else {
+          console.warn(`✗ Could not find object named: ${name}`);
+          console.log('Available objects:', app.getAllObjects ? app.getAllObjects() : 'Cannot list objects');
+          // Fallback: try app-level event
+          console.log('Trying app-level event...');
+          app.emitEvent('mouseDown', name);
+        }
+        
       } catch (e) {
-        console.error('Reset+play failed:', e);
+        console.error('State change failed:', e);
       } finally {
         buttons.forEach(b => b.disabled = false);
       }
     }
 
-    // Do not auto-play on load; only play what was clicked
+    // Load scene initially and trigger idle animation
+    app.load(SCENE_URL).then(() => {
+      console.log('Character scene loaded');
+      // Trigger mouseDown on the idle object
+      try {
+        const idleObject = app.findObjectByName('idle');
+        if (idleObject) {
+          idleObject.emitEvent('mouseDown');
+          console.log('Triggered initial idle animation');
+        } else {
+          console.warn('Could not find idle object for initial animation');
+        }
+      } catch (e) {
+        console.log('Could not trigger initial idle:', e);
+      }
+    }).catch(e => {
+      console.error('Initial load failed:', e);
+    });
 
-    // Buttons: reset scene, then play requested animation
+    // Buttons: trigger animation state changes
     for (const name of BUTTON_TARGETS) {
-      const btn = document.querySelector(`.animation-btn[data-animation=\"${name}\"]`);
+      const btn = document.querySelector(`.animation-btn[data-animation="${name}"]`);
       if (!btn) continue;
-      btn.addEventListener('click', () => resetAndPlay(name));
+      btn.addEventListener('click', () => playAnimation(name));
     }
   }
 </script>
