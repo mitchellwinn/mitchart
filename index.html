@@ -203,6 +203,11 @@
                 top: 60vh; /* Start higher on mobile */
                 height: 40vh; /* Taller gradient on mobile */
             }
+            
+            /* Fix gallery text z-index on mobile to appear above main scene */
+            .gallery-text {
+                z-index: 6; /* Higher z-index on mobile to appear above main scene */
+            }
         }
 
         @media (max-width: 480px) {
@@ -288,7 +293,7 @@
         /* Gallery text - simple and centered */
         .gallery-text {
             position: absolute;
-            top: 95vh;  /* Back to original position */
+            top: 100vh;  /* Moved higher up */
             left: 0;
             right: 0;
             text-align: center;
@@ -440,8 +445,8 @@
                             <canvas id="character-canvas"></canvas>
                         </div>
                         <div class="character-info">
-                            <h1 class="character-name character-text-scale io-fade-right-tiny">Retropian</h1>
                             <div class="sub_elements io-fade-right-close">
+                                <h1 class="character-name character-text-scale">Retropian</h1>
                                 <p class="character-subtitle">Mitchell Winn · Retry World · 2025</p>
                                 <div class="character-buttons">
                                     <button class="animation-btn" data-animation="idle">Idle</button>
