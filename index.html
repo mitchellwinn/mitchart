@@ -654,13 +654,30 @@
   const canvas = document.getElementById('character-canvas');
   if (canvas) {
     const app = new Application(canvas);
+    const SCENE_URL = 'https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode';
+
     try {
-      await app.load('https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode');
+      await app.load(SCENE_URL);
       // Optional: tweak zoom if you want to compensate CSS scaling differences
       // app.setZoom(1);
+
+      // Hard reset: reload the scene to clear any running animations, then emit
+      async function resetAndEmit(name) {
+        try {
+          // Disable buttons while reloading
+          document.querySelectorAll('.animation-btn').forEach(b => b.disabled = true);
+          await app.load(SCENE_URL);
+          app.emitEvent('mouseHover', name);
+        } catch (e) {
+          console.error('Reset+emit failed:', e);
+        } finally {
+          document.querySelectorAll('.animation-btn').forEach(b => b.disabled = false);
+        }
+      }
+
       const wire = (name) => {
         const btn = document.querySelector(`.animation-btn[data-animation="${name}"]`);
-        if (btn) btn.addEventListener('click', () => app.emitEvent('mouseHover', name));
+        if (btn) btn.addEventListener('click', () => resetAndEmit(name));
       };
       wire('idle'); wire('walk'); wire('run');
     } catch (e) {
