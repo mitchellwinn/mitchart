@@ -84,15 +84,15 @@
 /* Character Info Container */
 .character-info {
     position: absolute;
-    left: 0;
-    right: 0;
+    left: auto;
+    right: calc(10vw - max((100vw - 1400px) / 2, 0px)); /* Anchor rail: 10vw from viewport right */
     top: 30%; /* Higher up for earlier animation */
-    width: 100%;
+    width: max-content; /* shrink-to-fit so right edge aligns cleanly */
     height: auto;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    align-items: stretch; /* Let children handle their own alignment */
+    align-items: flex-end; /* Right-align children */
     z-index: 10;
     transform: translateY(-50%); /* Only center vertically */
 }
@@ -110,7 +110,7 @@
     color: #000;
     margin: 0;
     text-align: right; /* Right align text */
-    padding-right: 10vw; /* Explicit right positioning */
+    /* Positioning handled by parent .character-info padding-right */
     /* opacity and transform handled by io class */
     text-shadow: 2px 2px 8px rgba(255,255,255,0.9);
     pointer-events: auto; /* Ensure text is selectable */
@@ -124,7 +124,7 @@
     align-items: flex-end; /* Right align all children */
     width: 100%;
     margin-top: 1rem;
-    padding-right: 10vw; /* Explicit right positioning */
+    /* Positioning handled by parent .character-info */
     /* Animation handled by io-fade-right-close class */
     opacity: 0;
     transform: translateX(30px);
@@ -258,9 +258,8 @@
     .character-info {
         width: 100%;
         height: auto;
-        padding-left: 0;
-        text-align: center;
-        align-items: center;
+        text-align: right; /* match desktop */
+        align-items: flex-end; /* match desktop */
         order: 2; /* Show second (below the character) */
         z-index: 10;
         opacity: 1; /* Keep visible container */
@@ -280,8 +279,7 @@
         color: #000;
         font-weight: 900;
         text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
-        text-align: center; /* Center on mobile */
-        padding-right: 0; /* Remove right padding on mobile */
+        text-align: right; /* Right on mobile */
     }
     
     .sub_elements {
@@ -297,9 +295,8 @@
     .character-buttons {
         display: grid;
         grid-template-columns: repeat(2, max-content); /* 2 per row on mobile */
-        justify-content: center; /* Center grid on mobile */
-        justify-items: center;   /* Center items in cells */
-        padding-right: 0; /* Remove right padding on mobile */
+        justify-content: end; /* Right grid on mobile */
+        justify-items: end;   /* Right items in cells */
         margin-top: 1rem; /* Reduce top margin on mobile */
         column-gap: 0.75rem; /* Slightly smaller gap on mobile */
         row-gap: 0.5rem;
