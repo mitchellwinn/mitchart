@@ -86,11 +86,10 @@
         /* Gradient overlay to smooth transition from Spline scene to white */
         .gradient-overlay {
             position: absolute;
-            bottom: 0;
+            top: 70vh; /* Position relative to scene height to hide cutoff */
             left: 0;
             width: 100%;
-            height: clamp(200px, 30vh, 400px);
-            /* Responsive height with limits */
+            height: 30vh; /* Height to cover from cutoff to bottom */
             background: linear-gradient(to bottom,
                     rgba(255, 255, 255, 0) 0%,
                     /* Fully transparent at top */
@@ -106,6 +105,7 @@
             z-index: 2;
         }
 
+        /* Loading overlay */
         /* Loading overlay */
         .loading {
             position: fixed;
@@ -197,6 +197,12 @@
                 left: -25vw;
                 /* Keep wide background centered */
             }
+            
+            /* Position gradient higher on mobile to hide cutoff */
+            .gradient-overlay {
+                top: 60vh; /* Start higher on mobile */
+                height: 40vh; /* Taller gradient on mobile */
+            }
         }
 
         @media (max-width: 480px) {
@@ -240,8 +246,8 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 300vh;
-            /* All layers same height for overlap */
+            height: 250vh;
+            /* Adjusted height for optimal scroll length */
             transform: translateZ(0);
             z-index: 4;
             pointer-events: none;
@@ -260,10 +266,10 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 300vh;
-            /* All layers same height for overlap */
+            height: 250vh;
+            /* Adjusted height for optimal scroll length */
             transform: translateZ(-0.1px) scale(1.05);
-            z-index: 1;
+            z-index: 2; /* Between logo (4) and gallery (3) - behind gallery but in front of logo */
         }
 
         /* Slowest layer (text) - ~75% speed */
@@ -272,8 +278,8 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 300vh;
-            /* All layers same height for overlap */
+            height: 250vh;
+            /* Adjusted height for optimal scroll length */
             transform: translateZ(-0.2px) scale(1.1);
             transform-origin: center center;  /* Scale from center to maintain alignment */
             z-index: 3;
@@ -282,7 +288,7 @@
         /* Gallery text - simple and centered */
         .gallery-text {
             position: absolute;
-            top: 85vh;  /* Lowered from 80vh */
+            top: 95vh;  /* Moved lower for better positioning on mobile and desktop */
             left: 0;
             right: 0;
             text-align: center;
@@ -706,10 +712,10 @@
             
             // Initial check and animation
             updateGalleryText();
-            // Trigger initial animation after a short delay
+            // Trigger initial animation after 3 seconds (after loading completes)
             setTimeout(() => {
                 animateGalleryText();
-            }, 500);
+            }, 3000);
         })();
 
         // Button active styling (Runtime wiring in module script)
@@ -733,31 +739,45 @@
     const SCENE_URL = 'https://prod.spline.design/1KAnUvvHFNuk0abo/scene.splinecode';
     const BUTTON_TARGETS = ['idle', 'walk', 'run'];
 
-    // Function to trigger mouseDown event on named objects
+    // Function to reset scene state and play exclusive animation
     async function playAnimation(name) {
       console.log(`Button clicked: ${name}`);
       const buttons = document.querySelectorAll('.animation-btn');
       buttons.forEach(b => b.disabled = true);
       try {
+        // Reset scene state before playing new animation
+        console.log('Resetting scene state...');
+        app.stop(); // pause rendering and events
+        
+        // Give it a moment to stop
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        app.play(); // resume rendering and events
+        
+        // Give it a moment to restart cleanly
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        console.log('Scene reset complete, triggering animation...');
+        
         // Find the object with the name matching the button (idle, walk, run)
         console.log('Looking for object:', name);
         const targetObject = app.findObjectByName(name);
         
         if (targetObject) {
           console.log('Found object:', targetObject);
-          // Trigger mouseDown event on the object
-          targetObject.emitEvent('mouseDown');
-          console.log(`✓ Triggered mouseDown on object: ${name}`);
+          // Trigger mouseHover event on the object
+          targetObject.emitEvent('mouseHover');
+          console.log(`✓ Triggered mouseHover on object: ${name}`);
         } else {
           console.warn(`✗ Could not find object named: ${name}`);
           console.log('Available objects:', app.getAllObjects ? app.getAllObjects() : 'Cannot list objects');
           // Fallback: try app-level event
           console.log('Trying app-level event...');
-          app.emitEvent('mouseDown', name);
+          app.emitEvent('mouseHover', name);
         }
         
       } catch (e) {
-        console.error('State change failed:', e);
+        console.error('Animation play failed:', e);
       } finally {
         buttons.forEach(b => b.disabled = false);
       }
@@ -766,12 +786,12 @@
     // Load scene initially and trigger idle animation
     app.load(SCENE_URL).then(() => {
       console.log('Character scene loaded');
-      // Trigger mouseDown on the idle object
+      // Trigger mouseHover on the idle object
       try {
         const idleObject = app.findObjectByName('idle');
         if (idleObject) {
-          idleObject.emitEvent('mouseDown');
-          console.log('Triggered initial idle animation');
+          idleObject.emitEvent('mouseHover');
+          console.log('Triggered initial idle animation via mouseHover');
         } else {
           console.warn('Could not find idle object for initial animation');
         }

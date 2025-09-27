@@ -28,6 +28,7 @@
     align-items: center;
     justify-content: center;
     padding: 2rem;
+    background: transparent; /* Completely transparent */
 }
 
 /* Character Container */
@@ -45,7 +46,7 @@
 /* 3D Character Viewer */
 .character-3d {
     position: absolute;
-    left: 25vw; /* Position at 25% from left */
+    left: 15vw; /* Character positioned 15vw from left edge */
     width: 40vw; /* Make it bigger - 40% of viewport width */
     height: 100%;
     min-height: 500px;
@@ -85,7 +86,7 @@
 .character-info {
     position: absolute;
     left: auto;
-    right: calc(10vw - max((100vw - 1400px) / 2, 0px)); /* Anchor rail: 10vw from viewport right */
+    right: 2vw; /* Text positioned closer to right edge on desktop */
     top: 30%; /* Higher up for earlier animation */
     width: max-content; /* shrink-to-fit so right edge aligns cleanly */
     height: auto;
@@ -233,13 +234,13 @@
     
     .character-section {
         height: 100vh; /* Full viewport height */
-        background: rgba(255, 255, 255, 1); /* Solid background on mobile */
+        background: transparent; /* Transparent background on mobile */
     }
     
     .character-container {
         flex-direction: column;
         gap: 0.5rem; /* Much closer together */
-        padding: 1rem;
+        padding: 1rem 0 1rem 1rem; /* Remove right padding, keep others */
         justify-content: center;
         align-items: center;
         height: 90vh;
@@ -247,28 +248,36 @@
     
     /* Put character first in visual order */
     .character-3d {
-        width: 100%;
+        width: 80%; /* Narrower than full width */
         height: 60vh; /* Smaller to fit title below */
         min-height: 350px;
+        margin-left: 2rem; /* Push character further from left edge */
         /* Use same fade-left as desktop - no custom mobile transform */
         order: 1; /* Show first */
         opacity: 0; /* Start invisible, will fade in */
     }
     
     .character-info {
-        width: 100%;
+        width: max-content;
         height: auto;
         text-align: right; /* match desktop */
         align-items: flex-end; /* match desktop */
         order: 2; /* Show second (below the character) */
         z-index: 10;
         opacity: 1; /* Keep visible container */
+        /* Use absolute positioning */
+        position: absolute;
+        transform: none;
+        right: -5vw; /* Position extending beyond right edge on mobile */
+        top: auto;
+        margin: 0; /* Remove all margins */
+        padding: 0; /* Remove all padding */
     }
     
     .character-3d spline-viewer {
         width: 100%;
         height: 100%;
-        transform: scale(1.5); /* Make character 50% larger within container */
+        transform: scale(1.5) translateX(-10%); /* Scale + shift character more to the left */
     }
     
     .character-name {
@@ -284,6 +293,7 @@
     
     .sub_elements {
         margin-top: 0.5rem; /* Reduce margin on mobile */
+        align-items: flex-end; /* Ensure right alignment on mobile */
     }
     
     .character-subtitle {
@@ -294,11 +304,11 @@
     
     .character-buttons {
         display: grid;
-        grid-template-columns: repeat(2, max-content); /* 2 per row on mobile */
+        grid-template-columns: repeat(3, max-content); /* 3 per row like desktop */
         justify-content: end; /* Right grid on mobile */
         justify-items: end;   /* Right items in cells */
         margin-top: 1rem; /* Reduce top margin on mobile */
-        column-gap: 0.75rem; /* Slightly smaller gap on mobile */
+        column-gap: 0.5rem; /* Smaller gap for 3 columns */
         row-gap: 0.5rem;
     }
     
@@ -320,7 +330,7 @@
     .character-container {
         height: 85vh;
         gap: 0.5rem; /* Closer together */
-        padding: 1rem;
+        padding: 1rem 0 1rem 1rem; /* Remove right padding, keep others */
     }
     
     .character-3d {
