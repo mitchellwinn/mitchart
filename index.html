@@ -661,23 +661,38 @@
       // Optional: tweak zoom if you want to compensate CSS scaling differences
       // app.setZoom(1);
 
-      // Hard reset: reload the scene to clear any running animations, then emit
-      async function resetAndEmit(name) {
-        try {
-          // Disable buttons while reloading
-          document.querySelectorAll('.animation-btn').forEach(b => b.disabled = true);
-          await app.load(SCENE_URL);
-          app.emitEvent('mouseHover', name);
-        } catch (e) {
-          console.error('Reset+emit failed:', e);
-        } finally {
-          document.querySelectorAll('.animation-btn').forEach(b => b.disabled = false);
+      // Prefer exclusive state transitions on the rig/root
+      const actor = app.findObjectByName('retropian_root');
+
+      function play(name) {
+        if (!actor) {
+          console.error('retropian_root not found. Create a rig/root with States: idle, walk, run.');
+          return;
         }
+        // 1) Instant exclusive state switch (if States exist with these names)
+        if ('state' in actor) {
+          try {
+            actor.state = name; // exclusive
+            return;
+          } catch (e) {
+            console.warn('Direct state set failed:', e);
+          }
+        }
+        // 2) Programmatic transition to state (also exclusive)
+        if (typeof actor.transition === 'function') {
+          try {
+            actor.transition({ to: name, duration: 0, autoplay: true });
+            return;
+          } catch (e) {
+            console.warn('Transition to state failed:', e);
+          }
+        }
+        console.error('No States or transition available on retropian_root; add States named idle, walk, run in Spline.');
       }
 
       const wire = (name) => {
         const btn = document.querySelector(`.animation-btn[data-animation="${name}"]`);
-        if (btn) btn.addEventListener('click', () => resetAndEmit(name));
+        if (btn) btn.addEventListener('click', () => play(name));
       };
       wire('idle'); wire('walk'); wire('run');
     } catch (e) {
